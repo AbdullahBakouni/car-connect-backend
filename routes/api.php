@@ -45,6 +45,10 @@ Route::post('uploadUserIdImage', [UserController::class, 'uploadUserIdImage']);
 
 Route::post('addCar', [CarController::class, 'addCar']);
 Route::post('getCarsByBusinessUserId', [CarController::class, 'getCarsByBusinessUserId']);
+Route::get('getNewestCars', [CarController::class, 'getNewestCars']);
+Route::get('getCars', [CarController::class, 'getCars']);
+
+
 
 
 Route::post('addBalance', [AccountController::class, 'addBalance']);
