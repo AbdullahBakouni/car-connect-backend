@@ -136,4 +136,15 @@ class AuthController extends Controller
 
         return response()->json([], 200);
     }
+
+
+    public function getUsers()
+    {
+        $users = UserModel::all();
+        if ($users) {
+            return response()->json(['users' => $users], 200);
+        }
+
+        return response()->json([], 200);
+    }
 }

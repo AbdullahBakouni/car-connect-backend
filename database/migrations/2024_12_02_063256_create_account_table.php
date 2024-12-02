@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('account', function (Blueprint $table) {
             $table->id();
             $table->string('balance');
-            $table->string('accountNumber');
+            $table->double('accountNumber');
             $table->foreignId('userId')->constrained('user');
             $table->timestamps();
         });

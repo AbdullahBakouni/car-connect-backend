@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BusinessUserController;
@@ -20,6 +21,7 @@ Route::get('/user', function (Request $request) {
 Route::post('generateOTP', [AuthController::class, 'generateOTP']);
 Route::post('verifyCode', [AuthController::class, 'verifyCode']);
 Route::post('loginUsingEmail', [AuthController::class, 'loginUsingEmail']);
+Route::get('getUsers', [AuthController::class, 'getUsers']);
 
 
 Route::post('addGear', [GearController::class, 'addGear']);
@@ -43,3 +45,9 @@ Route::post('uploadUserIdImage', [UserController::class, 'uploadUserIdImage']);
 
 Route::post('addCar', [CarController::class, 'addCar']);
 Route::post('getCarsByBusinessUserId', [CarController::class, 'getCarsByBusinessUserId']);
+
+
+Route::post('addBalance', [AccountController::class, 'addBalance']);
+Route::post('getUserPayCard', [AccountController::class, 'getUserPayCard']);
+
+
