@@ -105,4 +105,22 @@ class CarController extends Controller
         }
         return response()->json(['can not add car'], 500);
     }
+
+
+    public function getCarsByUserId(Request $request)
+    {
+        $cars = CarModel::where('userId',$request->userId)->get();
+        $message = [];
+        for ($i = 0; $i < count($cars); $i++) {
+            $images = ImageModel::where('carId', $cars[$i]->id)->get();
+            array_push($message, [
+                'car' => $cars[$i],
+                'images' => $images
+            ]);
+        }
+        if ($cars) {
+            return response()->json(['cars' => $message], 200);
+        }
+        return response()->json(['can not add car'], 500);
+    }
 }

@@ -46,4 +46,21 @@ class BusinessUserController extends Controller
 
         return response()->json(['can not add profile info'], 500);
     }
+
+    public function getBusinessUsers(){
+        $users = BusinessAccountModel::where('type' , 0)->get();
+        if($users){
+            return response()->json($users, 200);
+        }
+        return response()->json([], 500);
+
+    }
+
+    public function getCompanyUsers() {
+        $users = BusinessAccountModel::where('type', 1)->get();
+        if ($users) {
+            return response()->json($users, 200);
+        }
+        return response()->json([], 500);
+    }
 }
