@@ -16,7 +16,7 @@ class BusinessUserController extends Controller
             return response()->json(['error' => 'user is not found'], 500);
         }
         if (!$request->file('commercialRegisterImageUrl') && $request->type == 1) {
-            return response()->json(['err   or' => 'commercial register  is required'], 500);
+            return response()->json(['error' => 'commercial register  is required'], 500);
         }
 
         if ($request->file('idImageUrl')) {

@@ -12,8 +12,11 @@ return new class extends Migration
         Schema::create('order', function (Blueprint $table) {
             $table->id();
             $table->string('status');
+            $table->string('paymentType');
             $table->string('date');
             $table->string('totalPrice');
+            $table->double('lat');
+            $table->double('long');
             $table->foreignId('userId')->constrained('user');
             $table->foreignId('deliveryId')->nullable()->constrained('delivery');
             $table->foreignId('carId')->constrained('car');

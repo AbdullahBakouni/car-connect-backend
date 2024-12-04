@@ -32,6 +32,7 @@ class CarController extends Controller
         $car->brandId = $request->brandId;
         $car->modelId = $request->modelId;
         $car->userId = $request->userId;
+        $car->price = $request->price;
         $res = $car->save();
 
         if (!$request->file('image0')) {
