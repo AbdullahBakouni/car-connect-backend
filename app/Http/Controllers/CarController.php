@@ -51,7 +51,7 @@ class CarController extends Controller
             return response()->json(['car' => $car], 200);
         }
 
-        return response()->json(['can not add car'], 500);
+        return response()->json(['error' => 'can not add car'], 500);
     }
 
     public function getCarsByBusinessUserId(Request $request) {
@@ -69,7 +69,7 @@ class CarController extends Controller
             return response()->json(['cars' => $message], 200);
 
             }
-        return response()->json(['can not add car'], 500);
+        return response()->json([], 500);
 
     }
 
@@ -86,7 +86,7 @@ class CarController extends Controller
         if ($cars) {
             return response()->json(['cars' => $message], 200);
         }
-        return response()->json(['can not add car'], 500);
+        return response()->json([''], 500);
 
 
     }
@@ -104,7 +104,7 @@ class CarController extends Controller
         if ($cars) {
             return response()->json(['cars' => $message], 200);
         }
-        return response()->json(['can not add car'], 500);
+        return response()->json([''], 500);
     }
 
 
@@ -122,6 +122,25 @@ class CarController extends Controller
         if ($cars) {
             return response()->json(['cars' => $message], 200);
         }
-        return response()->json(['can not add car'], 500);
+        return response()->json([''], 500);
+    }
+
+
+    public function getCarsByBrandId(Request $request){
+        $cars = CarModel::where('brandId',$request->brandId)->get();
+        $message = [];
+        for ($i = 0; $i < count($cars); $i++) {
+            $images = ImageModel::where('carId', $cars[$i]->id)->get();
+            array_push($message, [
+                'car' => $cars[$i],
+                'images' => $images
+            ]);
+        }
+        if($cars){
+            return response()->json(['cars' => $message], 200);
+
+        }
+        return response()->json([''], 500);
+
     }
 }

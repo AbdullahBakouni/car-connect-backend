@@ -21,9 +21,7 @@ class OrderController extends Controller
         userLat
         userLong
         */
-
         // status 0 pending 1 accepted 2 ontheway 3 delivered -1 canceled
-
         $order = new OrderModel;
         $order->status = "0";
         $order->paymentType = $request->paymentType;

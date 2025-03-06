@@ -62,6 +62,7 @@ Route::post('getCarsByBusinessUserId', [CarController::class, 'getCarsByBusiness
 Route::get('getNewestCars', [CarController::class, 'getNewestCars']);
 Route::get('getCars', [CarController::class, 'getCars']);
 Route::post('getCarsByUserId', [CarController::class, 'getCarsByUserId']);
+Route::post('getCarsByBrandId', [CarController::class, 'getCarsByBrandId']);
 
 
 
