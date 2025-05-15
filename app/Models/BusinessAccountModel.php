@@ -11,4 +11,11 @@ class BusinessAccountModel extends Model
     use HasApiTokens, Notifiable;
 
     protected $table = 'business_user';
+
+
+
+    public function cars()
+    {
+        return $this->hasMany(CarModel::class, 'userId');
+    }
 }

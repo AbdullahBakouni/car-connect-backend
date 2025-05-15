@@ -26,13 +26,13 @@ class BusinessUserController extends Controller
         } else {
             return response()->json(['error' => 'Id image is required'], 500);
         }
-        
+
         if ($request->file('commercialRegisterImageUrl')) {
             Storage::delete('public/' . $user->commercialRegisterImageUrl);
             $image = $request->file('commercialRegisterImageUrl')->store('public');
             $user->commercialRegisterImageUrl = basename($image);
         }
-      
+
         $user->name = $request->name;
         $user->desc = $request->desc;
         $user->lat = $request->lat;
@@ -47,16 +47,28 @@ class BusinessUserController extends Controller
         return response()->json(['can not add profile info'], 500);
     }
 
-    public function getBusinessUsers(){
-        $users = BusinessAccountModel::where('type' , 0)->get();
-        if($users){
+    public function getBusinessUsers()
+    {
+        $users = BusinessAccountModel::where('type', 0)->get();
+        if ($users) {
             return response()->json($users, 200);
         }
         return response()->json([], 500);
-
     }
 
-    public function getCompanyUsers() {
+    public function getBusinessUser(Request $request)
+    {
+        $users = BusinessAccountModel::where('id', $request->id)->first();
+        if ($users) {
+            return response()->json([
+                "user" => $users
+            ], 200);
+        }
+        return response()->json([], 500);
+    }
+
+    public function getCompanyUsers()
+    {
         $users = BusinessAccountModel::where('type', 1)->get();
         if ($users) {
             return response()->json($users, 200);
