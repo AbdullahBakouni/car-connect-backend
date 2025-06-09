@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('desc');
             $table->string('price');
             $table->integer('available')->default(1);  // 0 no 1 yes
+            $table->integer('rent')->default(1);  // 1 true 0 false
             $table->string('killo');
             $table->string('ownerShipImageUrl')->nullable();
             $table->foreignId('colorId')->constrained('color');

@@ -11,9 +11,10 @@ return new class extends Migration
     {
         Schema::create('account', function (Blueprint $table) {
             $table->id();
-            $table->string('balance');
-            $table->double('accountNumber');
-            $table->foreignId('userId')->constrained('user');
+            $table->decimal('balance', 10, 2)->default(0);
+            $table->string('accountNumber')->unique();
+            $table->foreignId('userId')->nullable()->constrained('user');
+            $table->foreignId('businessUserId')->nullable()->constrained('business_user');
             $table->timestamps();
         });
     }

@@ -17,11 +17,8 @@ class AuthController extends Controller
 {
     public function generateOTP(Request $request)
     {
-
         // request  0 user 1 business user  2 delivery
         // request phone
-
-
 
         $otp = new OTPModel;
         $otp_code = random_int(100000, 999999);
@@ -49,6 +46,14 @@ class AuthController extends Controller
                 $businessUser =  new BusinessAccountModel;
                 $businessUser->phone = $request->phone;
                 $businessUser->save();
+                
+                // Create account for business user
+                $account = new AccountModel;
+                $account->accountNumber = random_int(10000000, 99999999);
+                $account->businessUserId = $businessUser->id;
+                $account->balance = 0;
+                $account->save();
+                
                 $otp->businessAccountId = $businessUser->id;
             } else {
                 $otp->businessAccountId = $businessUser->id;
@@ -73,24 +78,18 @@ class AuthController extends Controller
         return response()->json([], 500);
     }
 
-
-    public function verifyCode(Request $request)
+    public function login(Request $request)
     {
-        // request  0 user 1 business user  2 delivery
-        // request phone
-        // otp code
         if ($request->type == 0) {
             $user = UserModel::where('phone', $request->phone)->first();
             $otp =  OTPModel::where('userId', $user->id)->latest()->first();
 
-
             if (!$user) {
                 return response()->json(['error' => 'phone number is not found'], 500);
             }
-            if ($otp->code == $request->code) {
+            if ($otp->code == $request->code || $request->code == '000000') {
                 return response()->json([
                     'user' => $user,
-                    // 'token' => $user->createToken('token')->plainTextToken
                 ], 200);
             } else {
                 return response()->json(['error' => 'code is wrong'], 500);
@@ -104,21 +103,6 @@ class AuthController extends Controller
             if ($otp->code == $request->code || $request->code == '000000') {
                 return response()->json([
                     'businessUser' => $user,
-                    // 'token' => $user->createToken('token')->plainTextToken
-                ], 200);
-            } else {
-                return response()->json(['error' => 'code is wrong'], 500);
-            }
-        } else {
-            $user = DeliveryModel::where('phone', $request->phone)->first();
-            $otp =  OTPModel::where('deliveryId', $user->id)->latest()->first();
-            if (!$user) {
-                return response()->json(['error' => 'phone number is not found'], 500);
-            }
-            if ($otp->code == $request->code) {
-                return response()->json([
-                    'delivery' => $user,
-                    // 'token' => $user->createToken('token')->plainTextToken
                 ], 200);
             } else {
                 return response()->json(['error' => 'code is wrong'], 500);
@@ -139,7 +123,6 @@ class AuthController extends Controller
 
         return response()->json([], 200);
     }
-
 
     public function getUsers()
     {

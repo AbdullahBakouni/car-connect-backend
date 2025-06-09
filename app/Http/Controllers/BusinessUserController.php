@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Http\Controllers\Controller;
 use App\Models\BusinessAccountModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class BusinessUserController extends Controller
 {
@@ -37,7 +37,7 @@ class BusinessUserController extends Controller
         $user->desc = $request->desc;
         $user->lat = $request->lat;
         $user->long = $request->long;
-        $user->type = $request->type; // 0 person 1 company
+        $user->type = $request->type;
 
         $user = $user->save();
         if ($user) {
@@ -58,13 +58,31 @@ class BusinessUserController extends Controller
 
     public function getBusinessUser(Request $request)
     {
-        $users = BusinessAccountModel::where('id', $request->id)->first();
-        if ($users) {
-            return response()->json([
-                "user" => $users
-            ], 200);
+        try {
+            $user = BusinessAccountModel::find($request->id);
+            
+            if (!$user) {
+                return response()->json(['error' => 'User not found'], 404);
+            }
+
+            $response = [
+                "user" => [
+                    "id" => $user->id,
+                    "name" => $user->name,
+                    "phone" => $user->phone,
+                    "desc" => $user->desc,
+                    "type" => $user->type,
+                    "lat" => $user->lat,
+                    "long" => $user->long,
+                    "idImageUrl" => $user->idImageUrl,
+                    "commercialRegisterImageUrl" => $user->commercialRegisterImageUrl,
+                ]
+            ];
+
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong'], 500);
         }
-        return response()->json([], 500);
     }
 
     public function getCompanyUsers()

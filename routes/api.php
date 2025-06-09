@@ -15,6 +15,7 @@ use App\Http\Controllers\ModelController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RateController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -70,12 +71,15 @@ Route::get('getCars', [CarController::class, 'getCars']);
 Route::post('getCarsByUserId', [CarController::class, 'getCarsByUserId']);
 Route::post('getCarsByBrandId', [CarController::class, 'getCarsByBrandId']);
 Route::post('getCarDetails', [CarController::class, 'getCarDetails']);
+Route::post('toggleCarAvailability', [CarController::class, 'toggleCarAvailability']);
+Route::get('getAllCars', [CarController::class, 'getAllCars']);
 
 
 
 //account
 Route::post('addBalance', [AccountController::class, 'addBalance']);
-Route::post('getUserPayCard', [AccountController::class, 'getUserPayCard']);
+Route::post('deductBalance', [AccountController::class, 'deductBalance']);
+Route::post('getAccount', [AccountController::class, 'getAccount']);
 
 
 //order
@@ -84,6 +88,7 @@ Route::post('getOrderByCompanyId', [OrderController::class, 'getOrderByCompanyId
 Route::post('changeOrderStatus', [OrderController::class, 'changeOrderStatus']);
 Route::post('getOrderByUserId', [OrderController::class, 'getOrderByUserId']);
 Route::post('getOrderToDelivery', [OrderController::class, 'getOrderToDelivery']);
+Route::get('getAllOrders', [OrderController::class, 'getAllOrders']);
 Route::post('getOrdegetOrderByCompanyIdrToDelivery', [OrderController::class, 'getOrderByCompanyId  ']);
 
 
@@ -102,9 +107,19 @@ Route::post('addLike', [LikesController::class, 'addLike']);
 
 //favorite
 
-Route::post('addFavorite', [FavoritesControlle::class, 'addFavorite']);
+Route::post('addFavorite', [FavoritesControlle::class, 'adsFavorite']);
 Route::post('getUserFavorites', [FavoritesControlle::class, 'getUserFavorites']);
 
 
 //report
 Route::post('addReport', [ReportController::class, 'addReport']);
+Route::post('getCarReports', [ReportController::class, 'getCarReports']);
+
+//reservations
+Route::get('getAllReservations', [ReservationsController::class, 'getAllReservations']);
+
+Route::post('addReservation', [ReservationsController::class, 'addReservation']);
+Route::get('/user/{userId}/reservations', [ReservationsController::class, 'getUserReservations']);
+Route::post('getBusinessUserReservations', [ReservationsController::class, 'getBusinessUserReservations']);
+
+Route::post('statistics', [App\Http\Controllers\StatisticsController::class, 'getStatistics']);

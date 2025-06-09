@@ -13,28 +13,23 @@ use App\Models\LikeModel;
 use App\Models\ModelModel;
 use App\Models\RateModel;
 use App\Models\ViewModel;
+use App\Models\AccountModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class CarController extends Controller
 {
-
     public function getCarDetails(Request $request)
     {
-        Log::info('getCarDetails called', ['carId' => $request->id]);
-
         try {
             $car = CarModel::with(['comments.user'])
                 ->where('id', $request->id)
                 ->first();
 
             if (!$car) {
-                Log::warning('Car not found', ['carId' => $request->id]);
                 return response()->json(['error' => 'Car not found'], 404);
             }
-
-            Log::info('Car found', ['car' => $car->id]);
 
             $model = ModelModel::find($car->modelId);
             $brand = BrandModel::find($car->brandId);
@@ -49,7 +44,6 @@ class CarController extends Controller
                 $view->save();
                 $viewCount = $view->count;
             } else {
-                Log::info('View record not found for car. Creating new.', ['carId' => $car->id]);
                 $view = new ViewModel();
                 $view->carId = $car->id;
                 $view->count = 1;
@@ -59,38 +53,23 @@ class CarController extends Controller
 
             $likesCount = LikeModel::where('carId', $car->id)->count();
 
-            return response()->json([
+            $response = [
                 'car' => $car,
-                'gear' => $gear,
                 'model' => $model,
-                'color' => $color,
                 'brand' => $brand,
+                'gear' => $gear,
+                'color' => $color,
                 'images' => $images,
-                'rate' => $avgRate,
-                'views' => $viewCount,
-                'likes' => $likesCount,
-                'comments' => $car->comments->map(function ($comment) {
-                    return [
-                        'id' => $comment->id,
-                        'comment' => $comment->comment,
-                        'user' => [
-                            'id' => $comment->user->id ?? null,
-                            'phone' => $comment->user->phone ?? 'Unknown',
-                        ],
-                        'created_at' => $comment->created_at,
-                    ];
-                }),
-            ], 200);
+                'avgRate' => round($avgRate, 1),
+                'viewCount' => $viewCount,
+                'likesCount' => $likesCount
+            ];
+
+            return response()->json($response, 200);
         } catch (\Exception $e) {
-            Log::error('Error in getCarDetails', [
-                'carId' => $request->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return response()->json(['error' => 'Something went wrong.'], 500);
+            return response()->json(['error' => 'Something went wrong'], 500);
         }
     }
-
 
     public function addCar(Request $request)
     {
@@ -104,10 +83,11 @@ class CarController extends Controller
         if ($user->commercialRegisterImageUrl == null && !$request->file('ownerShipImageUrl')) {
             return response()->json(['error' => 'owner ship image is required'], 500);
         }
-        // else if ($user->type == 0 && $request->file('ownerShipImageUrl')) {
-        //     $image = $request->file('ownerShipImageUrl')->store('public');
-        //     $car->ownerShipImageUrl = basename($image);
-        // }
+        if ($request->file('ownerShipImageUrl')) {
+            $image = $request->file('ownerShipImageUrl')->store('public');
+            $car->ownerShipImageUrl = basename($image);
+            $car->available = 0;
+        }
         $car->desc = $request->desc;
         $car->killo = $request->killo;
         $car->colorId = $request->colorId;
@@ -116,6 +96,7 @@ class CarController extends Controller
         $car->modelId = $request->modelId;
         $car->userId = $request->id;
         $car->price = $request->price;
+        $car->rent = $request->rent;
         $res = $car->save();
 
         try {
@@ -124,10 +105,6 @@ class CarController extends Controller
             $view->count = 0;
             $view->save();
         } catch (\Exception $e) {
-            Log::error('Failed to save view record: ' . $e->getMessage(), [
-                'carId' => $car->id,
-                'trace' => $e->getTraceAsString()
-            ]);
         }
 
         if (!$request->file('image0')) {
@@ -149,11 +126,9 @@ class CarController extends Controller
         return response()->json(['error' => 'can not add car'], 500);
     }
 
-
-
     public function getCarsByBusinessUserId(Request $request)
     {
-        $cars =  CarModel::where('userId', $request->userId)->get();
+        $cars = CarModel::where('userId', $request->userId)->get();
         $message = [];
         for ($i = 0; $i < count($cars); $i++) {
             $images = ImageModel::where('carId', $cars[$i]->id)->get();
@@ -170,9 +145,6 @@ class CarController extends Controller
 
     public function getNewestCars()
     {
-        Log::info('ccccccccccccccccccccccccccccccc ');
-
-
         $cars = CarModel::where('available', 1)->orderBy('created_at')->get();
         $message = [];
 
@@ -189,6 +161,7 @@ class CarController extends Controller
         }
         return response()->json([''], 200);
     }
+
     public function getCars()
     {
         $cars = CarModel::where('available', 1)->orderBy('created_at', 'desc')->get();
@@ -209,6 +182,25 @@ class CarController extends Controller
         return response()->json([], 500);
     }
 
+    public function getAllCars()
+    {
+        $cars = CarModel::all();
+        $message = [];
+
+        foreach ($cars as $car) {
+            $images = ImageModel::where('carId', $car->id)->get();
+            $message[] = [
+                'car' => $car,
+                'images' => $images
+            ];
+        }
+
+        if ($cars) {
+            return response()->json(['cars' => $message], 200);
+        }
+
+        return response()->json([], 500);
+    }
 
     public function getCarsByUserId(Request $request)
     {
@@ -227,10 +219,8 @@ class CarController extends Controller
         return response()->json([''], 500);
     }
 
-
     public function getCarsByBrandId(Request $request)
     {
-
         $cars = CarModel::where('brandId', $request->brandId)
             ->where('available', 1)
             ->orderBy('created_at', 'desc')
@@ -246,12 +236,33 @@ class CarController extends Controller
             ];
         }
 
-
         if ($cars->count()) {
             return response()->json(['cars' => $message], 200);
         }
 
-
         return response()->json([], 500);
+    }
+
+    public function toggleAvailability(Request $request)
+    {
+        try {
+            $car = CarModel::find($request->carId);
+            if (!$car) {
+                return response()->json(['error' => 'Car not found'], 404);
+            }
+
+            $car->available = !$car->available;
+            
+            if ($car->save()) {
+                return response()->json([
+                    'message' => 'Car availability updated successfully',
+                    'available' => $car->available
+                ], 200);
+            }
+
+            return response()->json(['error' => 'Failed to update car availability'], 500);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
     }
 }

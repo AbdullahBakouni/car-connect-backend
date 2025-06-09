@@ -26,6 +26,8 @@ class CarModel extends Model
     {
         return $this->hasMany(FavoriteModel::class);
     }
-
-    
+    public function reservations()
+    {
+        return $this->hasMany(ReservationsModel::class, 'carId');
+    }
 }
