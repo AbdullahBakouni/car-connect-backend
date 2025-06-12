@@ -14,7 +14,6 @@ use App\Models\ModelModel;
 use App\Models\RateModel;
 use App\Models\ViewModel;
 use App\Models\AccountModel;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -75,14 +74,13 @@ class CarController extends Controller
     public function addCar(Request $request)
     {
         $car = new CarModel;
-      
-         $businessUser = BusinessAccountModel::find($request->id);
-       
-    if (!$businessUser ) {
-        return response()->json(['error' => 'user not found'], 404);
-    }
 
-        if ($businessUser->commercialRegisterImageUrl == null && !$request->file('ownerShipImageUrl')) {
+        $user = BusinessAccountModel::where('id', $request->id)->first();
+        if (!$user) {
+            return response()->json(['error' => 'user is not found'], 500);
+        }
+
+        if ($user->commercialRegisterImageUrl == null && !$request->file('ownerShipImageUrl')) {
             return response()->json(['error' => 'owner ship image is required'], 500);
         }
         if ($request->file('ownerShipImageUrl')) {
@@ -109,16 +107,18 @@ class CarController extends Controller
         } catch (\Exception $e) {
         }
 
-        if (!$request->file('image0')) {
+        if (!$request->hasFile('image0')) {
             return response()->json(['error' => 'images are required'], 500);
-        } else {
-            for ($i = 0; $i < count($request->files) - 1; $i++) {
-                $image = $request->file('image' . $i)->store('public');
-                $imageModel = new ImageModel;
-                $imageModel->imageUrl = basename($image);
-                $imageModel->carId = $car->id;
-                $imageModel->save();
-            }
+        }
+
+        $i = 0;
+        while ($request->hasFile('image' . $i)) {
+            $image = $request->file('image' . $i)->store('public');
+            $imageModel = new ImageModel;
+            $imageModel->imageUrl = basename($image);
+            $imageModel->carId = $car->id;
+            $imageModel->save();
+            $i++;
         }
 
         if ($res) {
@@ -245,7 +245,7 @@ class CarController extends Controller
         return response()->json([], 500);
     }
 
-    public function toggleAvailability(Request $request)
+    public function toggleCarAvailability(Request $request)
     {
         try {
             $car = CarModel::find($request->carId);
@@ -254,8 +254,9 @@ class CarController extends Controller
             }
 
             $car->available = !$car->available;
-            
-            if ($car->save()) {
+            $res = $car->save();
+
+            if ($res) {
                 return response()->json([
                     'message' => 'Car availability updated successfully',
                     'available' => $car->available

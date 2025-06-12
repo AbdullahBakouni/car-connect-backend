@@ -110,4 +110,32 @@ class OrderController extends Controller
             return response()->json(['error' => 'Something went wrong'], 500);
         }
     }
+
+    public function getOrderByUserId(Request $request)
+    {
+        try {
+            $orders = OrderModel::where('userId', $request->userId)
+                ->with('car')
+                ->get();
+
+            return response()->json(['orders' => $orders], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
+    }
+
+    public function getOrderByCompanyId(Request $request)
+    {
+        try {
+             $cars = CarModel::where('userId', $request->companyId)->pluck('id');
+
+             $orders = OrderModel::whereIn('carId', $cars)
+                ->with(['car', 'user'])
+                ->get();
+
+            return response()->json(['orders' => $orders], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
+    }
 }

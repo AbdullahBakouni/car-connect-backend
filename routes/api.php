@@ -100,6 +100,7 @@ Route::post('rateCar', [RateController::class, 'rateCar']);
 //comment
 
 Route::post('addComment', [CommentController::class, 'addComment']);
+Route::post('getComment', [CommentController::class, 'getComment']);
 
 
 //likes
@@ -107,7 +108,7 @@ Route::post('addLike', [LikesController::class, 'addLike']);
 
 //favorite
 
-Route::post('addFavorite', [FavoritesControlle::class, 'adsFavorite']);
+Route::post('addFavorite', [FavoritesControlle::class, 'addFavorite']);
 Route::post('getUserFavorites', [FavoritesControlle::class, 'getUserFavorites']);
 
 

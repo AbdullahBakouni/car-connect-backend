@@ -15,6 +15,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             AdminSeed::class,
+            GearSeeder::class,
+            ColorSeeder::class,
+            ModelSeeder::class,
+            BrandSeeder::class,
         ]);
     }
 }

@@ -121,7 +121,19 @@ class AuthController extends Controller
             return response()->json(['error' => 'password is wrong'], 500);
         }
 
-        return response()->json([], 200);
+        // إنشاء توكن للمستخدم
+        $token = $admin->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'status' => true,
+            'token' => $token,
+            'user' => [
+                'id' => $admin->id,
+                'email' => $admin->email,
+                'type' => 'admin',
+                'name' => $admin->name
+            ]
+        ], 200);
     }
 
     public function getUsers()
