@@ -30,4 +30,29 @@ class CarModel extends Model
     {
         return $this->hasMany(ReservationsModel::class, 'carId');
     }
+
+    public function brand()
+    {
+        return $this->belongsTo(BrandModel::class, 'brandId');
+    }
+
+    public function model()
+    {
+        return $this->belongsTo(ModelModel::class, 'modelId');
+    }
+
+    public function color()
+    {
+        return $this->belongsTo(ColorModel::class, 'colorId');
+    }
+
+    public function gear()
+    {
+        return $this->belongsTo(GearModel::class, 'gearId');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(UserModel::class, 'userId');
+    }
 }

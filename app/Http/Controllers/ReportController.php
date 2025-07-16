@@ -62,4 +62,39 @@ class ReportController extends Controller
             return response()->json(['error' => 'Something went wrong'], 500);
         }
     }
+
+    public function getAllReports()
+    {
+        try {
+            $reports = ReportModel::with(['car', 'user'])->orderBy('created_at', 'desc')->get();
+            
+            $formattedReports = $reports->map(function($report) {
+                return [
+                    'id' => $report->id,
+                    'content' => $report->content,
+                    'carId' => $report->carId,
+                    'userId' => $report->userId,
+                    'created_at' => $report->created_at,
+                    'car' => $report->car ? [
+                        'id' => $report->car->id,
+                        'desc' => $report->car->desc,
+                        'price' => $report->car->price,
+                        'rent' => $report->car->rent
+                    ] : null,
+                    'user' => $report->user ? [
+                        'id' => $report->user->id,
+                        'name' => $report->user->name,
+                        'phone' => $report->user->phone
+                    ] : null
+                ];
+            });
+
+            return response()->json([
+                'total' => $reports->count(),
+                'reports' => $formattedReports
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
+    }
 }

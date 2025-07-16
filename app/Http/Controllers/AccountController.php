@@ -89,5 +89,35 @@ class AccountController extends Controller
             return response()->json(['error' => 'Server error'], 500);
         }
     }
+
+    public function getUserPayCard(Request $request)
+    {
+        $userId = $request->userId;
+        $businessUserId = $request->businessUserId;
+        if ($userId) {
+            $account = \App\Models\AccountModel::where('userId', $userId)->first();
+        } elseif ($businessUserId) {
+            $account = \App\Models\AccountModel::where('businessUserId', $businessUserId)->first();
+        } else {
+            $account = null;
+        }
+        if ($account) {
+            $card = [
+                'id' => $account->id,
+                'userId' => $account->userId,
+                'businessUserId' => $account->businessUserId,
+                'accountNumber' => $account->accountNumber,
+                'balance' => $account->balance,
+                'created_at' => $account->created_at,
+                'updated_at' => $account->updated_at,
+                'type' => 'account',
+                'is_default' => true
+            ];
+            $cards = [$card];
+        } else {
+            $cards = [];
+        }
+        return response()->json(['cards' => $cards], 200);
+    }
 }
 

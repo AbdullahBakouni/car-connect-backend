@@ -30,4 +30,10 @@ class UserController extends Controller
         }
         return response()->json(['can not add profile info'], 500);
     }
+
+    public function getRecentUsers()
+    {
+        $users = UserModel::orderBy('created_at', 'desc')->limit(5)->get();
+        return response()->json(['recentUsers' => $users], 200);
+    }
 }

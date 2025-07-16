@@ -26,9 +26,10 @@ Route::get('/user', function (Request $request) {
 
 // auth
 Route::post('generateOTP', [AuthController::class, 'generateOTP']);
-Route::post('verifyCode', [AuthController::class, 'verifyCode']);
+Route::post('verifyCode', [AuthController::class, 'login']);
 Route::post('loginUsingEmail', [AuthController::class, 'loginUsingEmail']);
 Route::get('getUsers', [AuthController::class, 'getUsers']);
+Route::post('addAdmin', [AuthController::class, 'addAdmin']);
 
 
 //gear
@@ -57,10 +58,13 @@ Route::post('addBusinessUserProfileInfo', [BusinessUserController::class, 'addBu
 Route::post('getBusinessUser', [BusinessUserController::class, 'getBusinessUser']);
 Route::get('getBusinessUsers', [BusinessUserController::class, 'getBusinessUsers']);
 Route::get('getCompanyUsers', [BusinessUserController::class, 'getCompanyUsers']);
+Route::get('getCompanyUsersWithInfo', [BusinessUserController::class, 'getCompanyUsersWithInfo']);
+Route::get('getAllBusinessAccountsWithInfo', [BusinessUserController::class, 'getAllBusinessAccountsWithInfo']);
 
 
 //user
 Route::post('uploadUserIdImage', [UserController::class, 'uploadUserIdImage']);
+Route::get('getRecentUsers', [UserController::class, 'getRecentUsers']);
 
 
 //car
@@ -73,13 +77,15 @@ Route::post('getCarsByBrandId', [CarController::class, 'getCarsByBrandId']);
 Route::post('getCarDetails', [CarController::class, 'getCarDetails']);
 Route::post('toggleCarAvailability', [CarController::class, 'toggleCarAvailability']);
 Route::get('getAllCars', [CarController::class, 'getAllCars']);
-
+Route::get('getTotalCars', [CarController::class, 'getTotalCars']);
+Route::get('getRecentCars', [CarController::class, 'getRecentCars']);
 
 
 //account
 Route::post('addBalance', [AccountController::class, 'addBalance']);
 Route::post('deductBalance', [AccountController::class, 'deductBalance']);
 Route::post('getAccount', [AccountController::class, 'getAccount']);
+Route::post('getUserPayCard', [AccountController::class, 'getUserPayCard']);
 
 
 //order
@@ -90,6 +96,8 @@ Route::post('getOrderByUserId', [OrderController::class, 'getOrderByUserId']);
 Route::post('getOrderToDelivery', [OrderController::class, 'getOrderToDelivery']);
 Route::get('getAllOrders', [OrderController::class, 'getAllOrders']);
 Route::post('getOrdegetOrderByCompanyIdrToDelivery', [OrderController::class, 'getOrderByCompanyId  ']);
+Route::post('releaseEscrow', [OrderController::class, 'releaseEscrow']);
+Route::post('refundEscrow', [OrderController::class, 'refundEscrow']);
 
 
 //rate
@@ -107,13 +115,14 @@ Route::post('addLike', [LikesController::class, 'addLike']);
 
 //favorite
 
-Route::post('addFavorite', [FavoritesControlle::class, 'adsFavorite']);
+Route::post('addFavorite', [FavoritesControlle::class, 'addFavorite']);
 Route::post('getUserFavorites', [FavoritesControlle::class, 'getUserFavorites']);
 
 
 //report
 Route::post('addReport', [ReportController::class, 'addReport']);
 Route::post('getCarReports', [ReportController::class, 'getCarReports']);
+Route::get('getAllReports', [ReportController::class, 'getAllReports']);
 
 //reservations
 Route::get('getAllReservations', [ReservationsController::class, 'getAllReservations']);

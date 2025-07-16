@@ -49,9 +49,15 @@ class BusinessUserController extends Controller
 
     public function getBusinessUsers()
     {
-        $users = BusinessAccountModel::where('type', 0)->get();
+        $users = BusinessAccountModel::get();
         if ($users) {
-            return response()->json($users, 200);
+            $usersWithBalance = $users->map(function($user) {
+                $account = \App\Models\AccountModel::where('businessUserId', $user->id)->first();
+                $userArray = $user->toArray();
+                $userArray['balance'] = $account ? $account->balance : 0;
+                return $userArray;
+            });
+            return response()->json($usersWithBalance, 200);
         }
         return response()->json([], 500);
     }
@@ -92,5 +98,51 @@ class BusinessUserController extends Controller
             return response()->json($users, 200);
         }
         return response()->json([], 500);
+    }
+
+    public function getCompanyUsersWithInfo()
+    {
+        $users = BusinessAccountModel::where('type', 1)->get();
+        $count = $users->count();
+        $data = $users->map(function($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'phone' => $user->phone,
+                'desc' => $user->desc,
+                'type' => $user->type,
+                'lat' => $user->lat,
+                'long' => $user->long,
+                'commercialRegisterImageUrl' => $user->commercialRegisterImageUrl
+            ];
+        });
+        return response()->json([
+            'count' => $count,
+            'companyUsers' => $data
+        ], 200);
+    }
+
+    public function getAllBusinessAccountsWithInfo()
+    {
+        $users = BusinessAccountModel::all();
+        $count = $users->count();
+        $data = $users->map(function(BusinessAccountModel $user) {
+            $account = \App\Models\AccountModel::where('businessUserId', $user->id)->first();
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'phone' => $user->phone,
+                'desc' => $user->desc,
+                'balance' => $account ? $account->balance : 0,
+                'type' => $user->type,
+                'lat' => $user->lat,
+                'long' => $user->long,
+                'commercialRegisterImageUrl' => $user->commercialRegisterImageUrl
+            ];
+        });
+        return response()->json([
+            'count' => $count,
+            'businessAccounts' => $data
+        ], 200);
     }
 }

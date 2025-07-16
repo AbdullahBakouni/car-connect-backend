@@ -12,4 +12,9 @@ class OrderModel extends Model
     {
         return $this->belongsTo(CarModel::class, 'carId');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(UserModel::class, 'userId');
+    }
 }
